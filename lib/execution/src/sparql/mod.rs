@@ -24,6 +24,7 @@ pub use spargebra::SparqlSyntaxError;
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum OptimizationLevel {
     /// No optimizations, except rewrites that are necessary for a working query.
+
     None,
     /// A balanced default optimization level. Suitable for simple queries or those handling modest
     /// data volumes.
