@@ -93,7 +93,6 @@ fn create_default_optimizers() -> Vec<Arc<dyn OptimizerRule + Send + Sync>> {
         Arc::new(SimplifyExpressions::new()),
         Arc::new(EliminateDuplicatedExpr::new()),
         Arc::new(EliminateFilter::new()),
-        Arc::new(EliminateLimit::new()),
         Arc::new(PropagateEmptyRelation::new()),
         Arc::new(EliminateOneUnion::new()),
         Arc::new(EliminateGroupByConstant::new()),
