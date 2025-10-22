@@ -2,86 +2,87 @@
 source: bench/tests/plans/wind_farm.rs
 expression: "&explanation.optimized_logical_plan.to_string()"
 ---
-Projection: ENC_PT(lhs.site_label) AS site_label, ENC_PT(lhs.wtur_label) AS wtur_label, ENC_PT(rhs.t) AS t, ENC_PT(lhs.val) AS val
-  Inner Join: lhs.dp = rhs.dp
-    SubqueryAlias: lhs
-      Projection: lhs.site_label AS site_label, lhs.wtur_label AS wtur_label, lhs.dp AS dp, rhs.val AS val
+Projection: ENC_PT(site_label) AS site_label, ENC_PT(wtur_label) AS wtur_label, ENC_PT(t) AS t, ENC_PT(val) AS val
+  Projection: site_label, wtur_label, t, val
+    Filter: EBV(BOOLEAN_AS_TERM(EBV(EQ(ENC_TV(wtur_label), ENC_TV(Struct({term_type:2,value:A1,data_type:http://www.w3.org/2001/XMLSchema#string,language_tag:})))) AND EBV(EQ(ENC_TV(site_label), ENC_TV(Struct({term_type:2,value:Wind Mountain,data_type:http://www.w3.org/2001/XMLSchema#string,language_tag:}))))))
+      Projection: lhs.site AS site, lhs.site_label AS site_label, lhs.wtur_asp AS wtur_asp, lhs.wtur_label AS wtur_label, lhs.wtur AS wtur, lhs.gensys_asp AS gensys_asp, lhs.gensys AS gensys, lhs.generator_asp AS generator_asp, lhs.generator AS generator, lhs.ts AS ts, lhs.dp AS dp, lhs.val AS val, rhs.t AS t
         Inner Join: lhs.dp = rhs.dp
           SubqueryAlias: lhs
-            Projection: lhs.site_label AS site_label, lhs.wtur_label AS wtur_label, rhs.dp AS dp
-              Inner Join: lhs.ts = rhs.ts
+            Projection: lhs.site AS site, lhs.site_label AS site_label, lhs.wtur_asp AS wtur_asp, lhs.wtur_label AS wtur_label, lhs.wtur AS wtur, lhs.gensys_asp AS gensys_asp, lhs.gensys AS gensys, lhs.generator_asp AS generator_asp, lhs.generator AS generator, lhs.ts AS ts, lhs.dp AS dp, rhs.val AS val
+              Inner Join: lhs.dp = rhs.dp
                 SubqueryAlias: lhs
-                  Projection: lhs.site_label AS site_label, lhs.wtur_label AS wtur_label, lhs.ts AS ts
+                  Projection: lhs.site AS site, lhs.site_label AS site_label, lhs.wtur_asp AS wtur_asp, lhs.wtur_label AS wtur_label, lhs.wtur AS wtur, lhs.gensys_asp AS gensys_asp, lhs.gensys AS gensys, lhs.generator_asp AS generator_asp, lhs.generator AS generator, lhs.ts AS ts, rhs.dp AS dp
                     Inner Join: lhs.ts = rhs.ts
                       SubqueryAlias: lhs
-                        Projection: lhs.site_label AS site_label, lhs.wtur_label AS wtur_label, rhs.ts AS ts
-                          Inner Join: lhs.generator = rhs.generator
+                        Projection: lhs.site AS site, lhs.site_label AS site_label, lhs.wtur_asp AS wtur_asp, lhs.wtur_label AS wtur_label, lhs.wtur AS wtur, lhs.gensys_asp AS gensys_asp, lhs.gensys AS gensys, lhs.generator_asp AS generator_asp, lhs.generator AS generator, lhs.ts AS ts
+                          Inner Join: lhs.ts = rhs.ts
                             SubqueryAlias: lhs
-                              Projection: lhs.site_label AS site_label, lhs.wtur_label AS wtur_label, lhs.generator AS generator
+                              Projection: lhs.site AS site, lhs.site_label AS site_label, lhs.wtur_asp AS wtur_asp, lhs.wtur_label AS wtur_label, lhs.wtur AS wtur, lhs.gensys_asp AS gensys_asp, lhs.gensys AS gensys, lhs.generator_asp AS generator_asp, lhs.generator AS generator, rhs.ts AS ts
                                 Inner Join: lhs.generator = rhs.generator
                                   SubqueryAlias: lhs
-                                    Projection: lhs.site_label AS site_label, lhs.wtur_label AS wtur_label, rhs.generator AS generator
-                                      Inner Join: lhs.generator_asp = rhs.generator_asp
+                                    Projection: lhs.site AS site, lhs.site_label AS site_label, lhs.wtur_asp AS wtur_asp, lhs.wtur_label AS wtur_label, lhs.wtur AS wtur, lhs.gensys_asp AS gensys_asp, lhs.gensys AS gensys, lhs.generator_asp AS generator_asp, lhs.generator AS generator
+                                      Inner Join: lhs.generator = rhs.generator
                                         SubqueryAlias: lhs
-                                          Projection: lhs.site_label AS site_label, lhs.wtur_label AS wtur_label, rhs.generator_asp AS generator_asp
-                                            Inner Join: lhs.gensys = rhs.gensys
+                                          Projection: lhs.site AS site, lhs.site_label AS site_label, lhs.wtur_asp AS wtur_asp, lhs.wtur_label AS wtur_label, lhs.wtur AS wtur, lhs.gensys_asp AS gensys_asp, lhs.gensys AS gensys, lhs.generator_asp AS generator_asp, rhs.generator AS generator
+                                            Inner Join: lhs.generator_asp = rhs.generator_asp
                                               SubqueryAlias: lhs
-                                                Projection: lhs.site_label AS site_label, lhs.wtur_label AS wtur_label, lhs.gensys AS gensys
+                                                Projection: lhs.site AS site, lhs.site_label AS site_label, lhs.wtur_asp AS wtur_asp, lhs.wtur_label AS wtur_label, lhs.wtur AS wtur, lhs.gensys_asp AS gensys_asp, lhs.gensys AS gensys, rhs.generator_asp AS generator_asp
                                                   Inner Join: lhs.gensys = rhs.gensys
                                                     SubqueryAlias: lhs
-                                                      Projection: lhs.site_label AS site_label, lhs.wtur_label AS wtur_label, rhs.gensys AS gensys
-                                                        Inner Join: lhs.gensys_asp = rhs.gensys_asp
+                                                      Projection: lhs.site AS site, lhs.site_label AS site_label, lhs.wtur_asp AS wtur_asp, lhs.wtur_label AS wtur_label, lhs.wtur AS wtur, lhs.gensys_asp AS gensys_asp, lhs.gensys AS gensys
+                                                        Inner Join: lhs.gensys = rhs.gensys
                                                           SubqueryAlias: lhs
-                                                            Projection: lhs.site_label AS site_label, lhs.wtur_label AS wtur_label, lhs.gensys_asp AS gensys_asp
-                                                              Inner Join: lhs.wtur = rhs.wtur
+                                                            Projection: lhs.site AS site, lhs.site_label AS site_label, lhs.wtur_asp AS wtur_asp, lhs.wtur_label AS wtur_label, lhs.wtur AS wtur, lhs.gensys_asp AS gensys_asp, rhs.gensys AS gensys
+                                                              Inner Join: lhs.gensys_asp = rhs.gensys_asp
                                                                 SubqueryAlias: lhs
-                                                                  Projection: lhs.site_label AS site_label, lhs.wtur_label AS wtur_label, lhs.wtur AS wtur, rhs.gensys_asp AS gensys_asp
+                                                                  Projection: lhs.site AS site, lhs.site_label AS site_label, lhs.wtur_asp AS wtur_asp, lhs.wtur_label AS wtur_label, lhs.wtur AS wtur, lhs.gensys_asp AS gensys_asp
                                                                     Inner Join: lhs.wtur = rhs.wtur
                                                                       SubqueryAlias: lhs
-                                                                        Projection: lhs.site_label AS site_label, lhs.wtur_label AS wtur_label, rhs.wtur AS wtur
-                                                                          Inner Join: lhs.wtur_asp = rhs.wtur_asp
+                                                                        Projection: lhs.site AS site, lhs.site_label AS site_label, lhs.wtur_asp AS wtur_asp, lhs.wtur_label AS wtur_label, lhs.wtur AS wtur, rhs.gensys_asp AS gensys_asp
+                                                                          Inner Join: lhs.wtur = rhs.wtur
                                                                             SubqueryAlias: lhs
-                                                                              Projection: lhs.site_label AS site_label, lhs.wtur_asp AS wtur_asp, rhs.wtur_label AS wtur_label
+                                                                              Projection: lhs.site AS site, lhs.site_label AS site_label, lhs.wtur_asp AS wtur_asp, lhs.wtur_label AS wtur_label, rhs.wtur AS wtur
                                                                                 Inner Join: lhs.wtur_asp = rhs.wtur_asp
                                                                                   SubqueryAlias: lhs
-                                                                                    Projection: lhs.site_label AS site_label, rhs.wtur_asp AS wtur_asp
-                                                                                      Inner Join: lhs.site = rhs.site
+                                                                                    Projection: lhs.site AS site, lhs.site_label AS site_label, lhs.wtur_asp AS wtur_asp, rhs.wtur_label AS wtur_label
+                                                                                      Inner Join: lhs.wtur_asp = rhs.wtur_asp
                                                                                         SubqueryAlias: lhs
-                                                                                          Projection: lhs.site AS site, rhs.site_label AS site_label
+                                                                                          Projection: lhs.site AS site, lhs.site_label AS site_label, rhs.wtur_asp AS wtur_asp
                                                                                             Inner Join: lhs.site = rhs.site
                                                                                               SubqueryAlias: lhs
-                                                                                                QuadPattern (?site <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://github.com/magbak/chrontext/rds_power#Site>)
+                                                                                                Projection: lhs.site AS site, rhs.site_label AS site_label
+                                                                                                  Inner Join: lhs.site = rhs.site
+                                                                                                    SubqueryAlias: lhs
+                                                                                                      QuadPattern (?site <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://github.com/magbak/chrontext/rds_power#Site>)
+                                                                                                    SubqueryAlias: rhs
+                                                                                                      QuadPattern (?site <http://www.w3.org/2000/01/rdf-schema#label> ?site_label)
                                                                                               SubqueryAlias: rhs
-                                                                                                Filter: EBV(EQ(ENC_TV(site_label), Union 3:{value:Wind Mountain,language:}))
-                                                                                                  QuadPattern (?site <http://www.w3.org/2000/01/rdf-schema#label> ?site_label)
+                                                                                                QuadPattern (?site <https://github.com/magbak/chrontext/rds_power#hasFunctionalAspect> ?wtur_asp)
                                                                                         SubqueryAlias: rhs
-                                                                                          QuadPattern (?site <https://github.com/magbak/chrontext/rds_power#hasFunctionalAspect> ?wtur_asp)
+                                                                                          QuadPattern (?wtur_asp <http://www.w3.org/2000/01/rdf-schema#label> ?wtur_label)
                                                                                   SubqueryAlias: rhs
-                                                                                    Filter: EBV(EQ(ENC_TV(wtur_label), Union 3:{value:A1,language:}))
-                                                                                      QuadPattern (?wtur_asp <http://www.w3.org/2000/01/rdf-schema#label> ?wtur_label)
+                                                                                    QuadPattern (?wtur <https://github.com/magbak/chrontext/rds_power#hasFunctionalAspectNode> ?wtur_asp)
                                                                             SubqueryAlias: rhs
-                                                                              QuadPattern (?wtur <https://github.com/magbak/chrontext/rds_power#hasFunctionalAspectNode> ?wtur_asp)
+                                                                              QuadPattern (?wtur <https://github.com/magbak/chrontext/rds_power#hasFunctionalAspect> ?gensys_asp)
                                                                       SubqueryAlias: rhs
-                                                                        QuadPattern (?wtur <https://github.com/magbak/chrontext/rds_power#hasFunctionalAspect> ?gensys_asp)
+                                                                        QuadPattern (?wtur <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://github.com/magbak/chrontext/rds_power#A>)
                                                                 SubqueryAlias: rhs
-                                                                  QuadPattern (?wtur <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://github.com/magbak/chrontext/rds_power#A>)
+                                                                  QuadPattern (?gensys <https://github.com/magbak/chrontext/rds_power#hasFunctionalAspectNode> ?gensys_asp)
                                                           SubqueryAlias: rhs
-                                                            QuadPattern (?gensys <https://github.com/magbak/chrontext/rds_power#hasFunctionalAspectNode> ?gensys_asp)
+                                                            QuadPattern (?gensys <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://github.com/magbak/chrontext/rds_power#RA>)
                                                     SubqueryAlias: rhs
-                                                      QuadPattern (?gensys <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://github.com/magbak/chrontext/rds_power#RA>)
+                                                      QuadPattern (?gensys <https://github.com/magbak/chrontext/rds_power#hasFunctionalAspect> ?generator_asp)
                                               SubqueryAlias: rhs
-                                                QuadPattern (?gensys <https://github.com/magbak/chrontext/rds_power#hasFunctionalAspect> ?generator_asp)
+                                                QuadPattern (?generator <https://github.com/magbak/chrontext/rds_power#hasFunctionalAspectNode> ?generator_asp)
                                         SubqueryAlias: rhs
-                                          QuadPattern (?generator <https://github.com/magbak/chrontext/rds_power#hasFunctionalAspectNode> ?generator_asp)
+                                          QuadPattern (?generator <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://github.com/magbak/chrontext/rds_power#GAA>)
                                   SubqueryAlias: rhs
-                                    QuadPattern (?generator <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://github.com/magbak/chrontext/rds_power#GAA>)
+                                    QuadPattern (?generator <https://github.com/magbak/chrontext#hasTimeseries> ?ts)
                             SubqueryAlias: rhs
-                              QuadPattern (?generator <https://github.com/magbak/chrontext#hasTimeseries> ?ts)
+                              QuadPattern (?ts <http://www.w3.org/2000/01/rdf-schema#label> "Production")
                       SubqueryAlias: rhs
-                        QuadPattern (?ts <http://www.w3.org/2000/01/rdf-schema#label> "Production")
+                        QuadPattern (?ts <https://github.com/magbak/chrontext#hasDataPoint> ?dp)
                 SubqueryAlias: rhs
-                  QuadPattern (?ts <https://github.com/magbak/chrontext#hasDataPoint> ?dp)
+                  QuadPattern (?dp <https://github.com/magbak/chrontext#hasValue> ?val)
           SubqueryAlias: rhs
-            QuadPattern (?dp <https://github.com/magbak/chrontext#hasValue> ?val)
-    SubqueryAlias: rhs
-      QuadPattern (?dp <https://github.com/magbak/chrontext#hasTimestamp> ?t)
+            QuadPattern (?dp <https://github.com/magbak/chrontext#hasTimestamp> ?t)

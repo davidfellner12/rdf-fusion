@@ -7,13 +7,13 @@ ProjectionExec: expr=[ENC_PT(productType@0) as productType, ENC_PT(reviewCount@1
     ProjectionExec: expr=[productType@0 as productType, INT64_AS_TERM(<uuid>@1) as reviewCount]
       AggregateExec: mode=Single, gby=[productType@0 as productType], aggr=[<uuid>]
         CoalesceBatchesExec: target_batch_size=8192
-          HashJoinExec: mode=CollectLeft, join_type=Inner, on=[(reviewer@2, reviewer@0)], projection=[productType@0, review@1]
+          HashJoinExec: mode=CollectLeft, join_type=Inner, on=[(reviewer@4, reviewer@0)], projection=[productType@0, product@1, producer@2, review@3, reviewer@4]
             CoalesceBatchesExec: target_batch_size=8192
-              HashJoinExec: mode=CollectLeft, join_type=Inner, on=[(review@1, review@0)], projection=[productType@0, review@1, reviewer@3]
+              HashJoinExec: mode=CollectLeft, join_type=Inner, on=[(review@3, review@0)], projection=[productType@0, product@1, producer@2, review@3, reviewer@5]
                 CoalesceBatchesExec: target_batch_size=8192
-                  HashJoinExec: mode=CollectLeft, join_type=Inner, on=[(product@1, product@1)], projection=[productType@0, review@2]
+                  HashJoinExec: mode=CollectLeft, join_type=Inner, on=[(product@1, product@1)], projection=[productType@0, product@1, producer@2, review@3]
                     CoalesceBatchesExec: target_batch_size=8192
-                      HashJoinExec: mode=CollectLeft, join_type=Inner, on=[(producer@2, producer@0)], projection=[productType@0, product@1]
+                      HashJoinExec: mode=CollectLeft, join_type=Inner, on=[(producer@2, producer@0)], projection=[productType@0, product@1, producer@2]
                         CoalesceBatchesExec: target_batch_size=8192
                           HashJoinExec: mode=CollectLeft, join_type=Inner, on=[(product@1, product@0)], projection=[productType@0, product@1, producer@3]
                             CoalesceBatchesExec: target_batch_size=8192

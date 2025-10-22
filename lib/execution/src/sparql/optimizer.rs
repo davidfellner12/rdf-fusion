@@ -15,6 +15,7 @@ use rdf_fusion_logical::paths::PropertyPathLoweringRule;
 use rdf_fusion_logical::patterns::PatternLoweringRule;
 use rdf_fusion_physical::join::NestedLoopJoinProjectionPushDown;
 use std::sync::Arc;
+use datafusion::optimizer::eliminate_nested_union::EliminateNestedUnion;
 
 /// Creates a list of optimizer rules based on the given `optimization_level`.
 pub fn create_optimizer_rules(
@@ -40,19 +41,21 @@ pub fn create_optimizer_rules(
             let mut rules: Vec<Arc<dyn OptimizerRule + Send + Sync>> = Vec::new();
 
             rules.extend(lowering_rules);
+            /*
             rules.push(Arc::new(SimplifySparqlExpressionsRule::new(
                 context.encodings().clone(),
                 Arc::clone(context.functions()),
-            )));
+            )));*/
 
             // DataFusion Optimizers
             // TODO: Replace with a good subset
             rules.extend(create_essential_datafusion_optimizers());
+            //rules.push(Arc::new(EliminateNestedUnion::new()));
 
-            rules.push(Arc::new(SimplifySparqlExpressionsRule::new(
+            /*rules.push(Arc::new(SimplifySparqlExpressionsRule::new(
                 context.encodings().clone(),
                 Arc::clone(context.functions()),
-            )));
+            )));*/
             rules
         }
         OptimizationLevel::Full => {

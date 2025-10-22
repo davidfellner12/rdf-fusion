@@ -3,7 +3,7 @@ source: bench/tests/plans/bsbm_explore.rs
 expression: "&string"
 ---
 ProjectionExec: expr=[ENC_PT(label@0) as label, ENC_PT(comment@1) as comment, ENC_PT(producer@2) as producer, ENC_PT(productFeature@3) as productFeature, ENC_PT(propertyTextual1@4) as propertyTextual1, ENC_PT(propertyTextual2@5) as propertyTextual2, ENC_PT(propertyTextual3@6) as propertyTextual3, ENC_PT(propertyNumeric1@7) as propertyNumeric1, ENC_PT(propertyNumeric2@8) as propertyNumeric2, ENC_PT(propertyTextual4@9) as propertyTextual4, ENC_PT(propertyTextual5@10) as propertyTextual5, ENC_PT(propertyNumeric4@11) as propertyNumeric4]
-  NestedLoopJoinExec: join_type=Left
+  NestedLoopJoinExec: join_type=Left, projection=[label@0, comment@1, producer@3, productFeature@5, propertyTextual1@6, propertyTextual2@7, propertyTextual3@8, propertyNumeric1@9, propertyNumeric2@10, propertyTextual4@11, propertyTextual5@12, propertyNumeric4@13]
     NestedLoopJoinExec: join_type=Left
       NestedLoopJoinExec: join_type=Left
         CrossJoinExec
@@ -12,10 +12,10 @@ ProjectionExec: expr=[ENC_PT(label@0) as label, ENC_PT(comment@1) as comment, EN
               CrossJoinExec
                 CrossJoinExec
                   CoalesceBatchesExec: target_batch_size=8192
-                    HashJoinExec: mode=CollectLeft, join_type=Inner, on=[(f@3, f@0)], projection=[label@0, comment@1, producer@2, productFeature@5]
+                    HashJoinExec: mode=CollectLeft, join_type=Inner, on=[(f@4, f@0)], projection=[label@0, comment@1, p@2, producer@3, f@4, productFeature@6]
                       CrossJoinExec
                         CoalesceBatchesExec: target_batch_size=8192
-                          HashJoinExec: mode=CollectLeft, join_type=Inner, on=[(p@2, p@0)], projection=[label@0, comment@1, producer@3]
+                          HashJoinExec: mode=CollectLeft, join_type=Inner, on=[(p@2, p@0)], projection=[label@0, comment@1, p@2, producer@3]
                             CoalesceBatchesExec: target_batch_size=8192
                               HashJoinExec: mode=CollectLeft, join_type=Inner, on=[(p@2, p@0)], projection=[label@0, comment@1, p@2, producer@4]
                                 CrossJoinExec

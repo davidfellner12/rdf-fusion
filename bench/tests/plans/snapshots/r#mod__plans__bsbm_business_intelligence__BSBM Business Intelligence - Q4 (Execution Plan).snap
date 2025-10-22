@@ -8,11 +8,11 @@ ProjectionExec: expr=[ENC_PT(feature@0) as feature, ENC_PT(priceRatio@3) as pric
       CoalesceBatchesExec: target_batch_size=8192
         HashJoinExec: mode=CollectLeft, join_type=Inner, on=[(feature@0, feature@0)], projection=[feature@0, withFeaturePrice@1, withoutFeaturePrice@3]
           ProjectionExec: expr=[feature@0 as feature, <uuid>@1 as withFeaturePrice]
-            AggregateExec: mode=Single, gby=[feature@0 as feature], aggr=[<uuid>]
+            AggregateExec: mode=Single, gby=[feature@1 as feature], aggr=[<uuid>]
               CoalesceBatchesExec: target_batch_size=8192
-                HashJoinExec: mode=CollectLeft, join_type=Inner, on=[(offer@1, offer@0)], projection=[feature@0, price@3]
+                HashJoinExec: mode=CollectLeft, join_type=Inner, on=[(offer@2, offer@0)], projection=[product@0, feature@1, offer@2, price@4]
                   CoalesceBatchesExec: target_batch_size=8192
-                    HashJoinExec: mode=CollectLeft, join_type=Inner, on=[(product@0, product@1)], projection=[feature@1, offer@2]
+                    HashJoinExec: mode=CollectLeft, join_type=Inner, on=[(product@0, product@1)], projection=[product@0, feature@1, offer@2]
                       CoalesceBatchesExec: target_batch_size=8192
                         HashJoinExec: mode=CollectLeft, join_type=Inner, on=[(product@0, product@0)], projection=[product@0, feature@2]
                           DataSourceExec: [GPOS] subject=?product, predicate=<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>, object=<http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/instances/ProductType48>
@@ -22,19 +22,20 @@ ProjectionExec: expr=[ENC_PT(feature@0) as feature, ENC_PT(priceRatio@3) as pric
           ProjectionExec: expr=[feature@0 as feature, <uuid>@1 as withoutFeaturePrice]
             AggregateExec: mode=Single, gby=[feature@0 as feature], aggr=[<uuid>]
               CoalesceBatchesExec: target_batch_size=8192
-                HashJoinExec: mode=CollectLeft, join_type=LeftAnti, on=[(feature@0, __inner__feature@1), (product@1, __inner__product@0)], projection=[feature@0, price@2]
-                  CrossJoinExec
-                    AggregateExec: mode=Single, gby=[feature@0 as feature], aggr=[]
-                      CoalesceBatchesExec: target_batch_size=8192
-                        HashJoinExec: mode=CollectLeft, join_type=Inner, on=[(p@0, p@0)], projection=[feature@2]
-                          DataSourceExec: [GPOS] subject=?p, predicate=<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>, object=<http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/instances/ProductType48>
-                          DataSourceExec: [GPOS] subject=?p, predicate=<http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/vocabulary/productFeature>, object=?feature, additional_filters=[DynamicFilterPhysicalExpr [ true ]]
-                    CoalesceBatchesExec: target_batch_size=8192
-                      HashJoinExec: mode=CollectLeft, join_type=Inner, on=[(offer@1, offer@0)], projection=[product@0, price@3]
+                FilterExec: EBV(BOOLEAN_AS_TERM(NOT mark@4))
+                  NestedLoopJoinExec: join_type=LeftMark, filter=feature@0 = __inner__feature@3 AND product@1 = __inner__product@2
+                    CrossJoinExec
+                      AggregateExec: mode=Single, gby=[feature@0 as feature], aggr=[]
                         CoalesceBatchesExec: target_batch_size=8192
-                          HashJoinExec: mode=CollectLeft, join_type=Inner, on=[(product@0, product@1)], projection=[product@0, offer@1]
-                            DataSourceExec: [GPOS] subject=?product, predicate=<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>, object=<http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/instances/ProductType48>
-                            DataSourceExec: [GPOS] subject=?offer, predicate=<http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/vocabulary/product>, object=?product, additional_filters=[DynamicFilterPhysicalExpr [ true ]]
-                        DataSourceExec: [GPOS] subject=?offer, predicate=<http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/vocabulary/price>, object=?price, additional_filters=[DynamicFilterPhysicalExpr [ true ]]
-                  ProjectionExec: expr=[product@0 as __inner__product, feature@1 as __inner__feature]
-                    DataSourceExec: [GPOS] subject=?product, predicate=<http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/vocabulary/productFeature>, object=?feature
+                          HashJoinExec: mode=CollectLeft, join_type=Inner, on=[(p@0, p@0)], projection=[feature@2]
+                            DataSourceExec: [GPOS] subject=?p, predicate=<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>, object=<http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/instances/ProductType48>
+                            DataSourceExec: [GPOS] subject=?p, predicate=<http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/vocabulary/productFeature>, object=?feature, additional_filters=[DynamicFilterPhysicalExpr [ true ]]
+                      CoalesceBatchesExec: target_batch_size=8192
+                        HashJoinExec: mode=CollectLeft, join_type=Inner, on=[(offer@1, offer@0)], projection=[product@0, offer@1, price@3]
+                          CoalesceBatchesExec: target_batch_size=8192
+                            HashJoinExec: mode=CollectLeft, join_type=Inner, on=[(product@0, product@1)], projection=[product@0, offer@1]
+                              DataSourceExec: [GPOS] subject=?product, predicate=<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>, object=<http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/instances/ProductType48>
+                              DataSourceExec: [GPOS] subject=?offer, predicate=<http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/vocabulary/product>, object=?product, additional_filters=[DynamicFilterPhysicalExpr [ true ]]
+                          DataSourceExec: [GPOS] subject=?offer, predicate=<http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/vocabulary/price>, object=?price, additional_filters=[DynamicFilterPhysicalExpr [ true ]]
+                    ProjectionExec: expr=[product@0 as __inner__product, feature@1 as __inner__feature]
+                      DataSourceExec: [GPOS] subject=?product, predicate=<http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/vocabulary/productFeature>, object=?feature

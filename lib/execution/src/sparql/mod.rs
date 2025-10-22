@@ -25,9 +25,10 @@ pub enum OptimizationLevel {
     None,
     /// A balanced default optimization level. Suitable for simple queries or those handling modest
     /// data volumes.
+    #[default]
     Default,
     /// Runs all optimizations. Ideal for complex queries or those processing large datasets.
-    #[default]
+    
     Full,
 }
 

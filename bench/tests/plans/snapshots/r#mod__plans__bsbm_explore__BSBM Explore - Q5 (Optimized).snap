@@ -2,34 +2,33 @@
 source: bench/tests/plans/bsbm_explore.rs
 expression: "&explanation.optimized_logical_plan.to_string()"
 ---
-Projection: ENC_PT(first_value(product) ORDER BY [ENC_SORT(ENC_PT(productLabel)) ASC NULLS FIRST, product ASC NULLS FIRST]) AS product, ENC_PT(first_value(productLabel) ORDER BY [ENC_SORT(ENC_PT(productLabel)) ASC NULLS FIRST, product ASC NULLS FIRST]) AS productLabel
-  Sort: ENC_SORT(ENC_PT(productLabel)) ASC NULLS FIRST, product ASC NULLS FIRST, fetch=5
-    Aggregate: groupBy=[[__common_expr_1 AS ENC_SORT(ENC_PT(productLabel)), product]], aggr=[[first_value(product) ORDER BY [__common_expr_1 AS ENC_SORT(ENC_PT(productLabel)) ASC NULLS FIRST, product ASC NULLS FIRST] AS first_value(product) ORDER BY [ENC_SORT(ENC_PT(productLabel)) ASC NULLS FIRST, product ASC NULLS FIRST], first_value(productLabel) ORDER BY [__common_expr_1 AS ENC_SORT(ENC_PT(productLabel)) ASC NULLS FIRST, product ASC NULLS FIRST] AS first_value(productLabel) ORDER BY [ENC_SORT(ENC_PT(productLabel)) ASC NULLS FIRST, product ASC NULLS FIRST]]]
-      Projection: ENC_SORT(ENC_PT(productLabel)) AS __common_expr_1, product, productLabel
-        Sort: ENC_SORT(ENC_PT(productLabel)) ASC NULLS FIRST
-          Projection: lhs.product AS product, lhs.productLabel AS productLabel
-            Inner Join: lhs.product = rhs.product Filter: EBV(LT(ENC_TV(rhs.simProperty2), ADD(ENC_TV(lhs.origProperty2), Union 9:170))) AND EBV(GT(ENC_TV(rhs.simProperty2), SUB(ENC_TV(lhs.origProperty2), Union 9:170)))
-              SubqueryAlias: lhs
-                Cross Join: 
-                  Projection: lhs.product AS product, lhs.productLabel AS productLabel
-                    Inner Join: lhs.product = rhs.product Filter: EBV(LT(ENC_TV(rhs.simProperty1), ADD(ENC_TV(lhs.origProperty1), Union 9:120))) AND EBV(GT(ENC_TV(rhs.simProperty1), SUB(ENC_TV(lhs.origProperty1), Union 9:120)))
-                      SubqueryAlias: lhs
-                        Cross Join: 
-                          Projection: lhs.product AS product, lhs.productLabel AS productLabel
-                            Inner Join: lhs.prodFeature = rhs.prodFeature, lhs.product = rhs.product
-                              SubqueryAlias: lhs
-                                Cross Join: 
-                                  Filter: product != UInt32(<object id>)
-                                    QuadPattern (?product <http://www.w3.org/2000/01/rdf-schema#label> ?productLabel)
-                                  QuadPattern (<http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/instances/dataFromProducer19/Product890> <http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/vocabulary/productFeature> ?prodFeature)
-                              SubqueryAlias: rhs
-                                Filter: product != UInt32(<object id>)
-                                  QuadPattern (?product <http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/vocabulary/productFeature> ?prodFeature)
-                          QuadPattern (<http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/instances/dataFromProducer19/Product890> <http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/vocabulary/productPropertyNumeric1> ?origProperty1)
-                      SubqueryAlias: rhs
-                        Filter: product != UInt32(<object id>)
-                          QuadPattern (?product <http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/vocabulary/productPropertyNumeric1> ?simProperty1)
-                  QuadPattern (<http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/instances/dataFromProducer19/Product890> <http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/vocabulary/productPropertyNumeric2> ?origProperty2)
-              SubqueryAlias: rhs
-                Filter: product != UInt32(<object id>)
-                  QuadPattern (?product <http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/vocabulary/productPropertyNumeric2> ?simProperty2)
+Projection: ENC_PT(product) AS product, ENC_PT(productLabel) AS productLabel
+  Limit: skip=0, fetch=5
+    Projection: first_value(product) ORDER BY [ENC_SORT(ENC_PT(productLabel)) ASC NULLS FIRST, product ASC NULLS FIRST] AS product, first_value(productLabel) ORDER BY [ENC_SORT(ENC_PT(productLabel)) ASC NULLS FIRST, product ASC NULLS FIRST] AS productLabel
+      Sort: ENC_SORT(ENC_PT(productLabel)) ASC NULLS FIRST, product ASC NULLS FIRST
+        Aggregate: groupBy=[[ENC_SORT(ENC_PT(productLabel)), product]], aggr=[[first_value(product) ORDER BY [ENC_SORT(ENC_PT(productLabel)) ASC NULLS FIRST, product ASC NULLS FIRST], first_value(productLabel) ORDER BY [ENC_SORT(ENC_PT(productLabel)) ASC NULLS FIRST, product ASC NULLS FIRST]]]
+          Projection: product, productLabel
+            Sort: ENC_SORT(ENC_PT(productLabel)) ASC NULLS FIRST
+              Filter: EBV(BOOLEAN_AS_TERM(EBV(BOOLEAN_AS_TERM(EBV(BOOLEAN_AS_TERM(NOT EBV(EQ(ENC_TV(Struct({term_type:0,value:http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/instances/dataFromProducer19/Product890,data_type:,language_tag:})), ENC_TV(product))))) AND EBV(BOOLEAN_AS_TERM(EBV(LT(ENC_TV(simProperty1), ADD(ENC_TV(origProperty1), ENC_TV(Struct({term_type:2,value:120,data_type:http://www.w3.org/2001/XMLSchema#integer,language_tag:}))))) AND EBV(GT(ENC_TV(simProperty1), SUB(ENC_TV(origProperty1), ENC_TV(Struct({term_type:2,value:120,data_type:http://www.w3.org/2001/XMLSchema#integer,language_tag:}))))))))) AND EBV(BOOLEAN_AS_TERM(EBV(LT(ENC_TV(simProperty2), ADD(ENC_TV(origProperty2), ENC_TV(Struct({term_type:2,value:170,data_type:http://www.w3.org/2001/XMLSchema#integer,language_tag:}))))) AND EBV(GT(ENC_TV(simProperty2), SUB(ENC_TV(origProperty2), ENC_TV(Struct({term_type:2,value:170,data_type:http://www.w3.org/2001/XMLSchema#integer,language_tag:})))))))))
+                Projection: lhs.product AS product, lhs.productLabel AS productLabel, lhs.prodFeature AS prodFeature, lhs.origProperty1 AS origProperty1, lhs.simProperty1 AS simProperty1, lhs.origProperty2 AS origProperty2, rhs.simProperty2 AS simProperty2
+                  Inner Join: lhs.product = rhs.product
+                    SubqueryAlias: lhs
+                      Cross Join: 
+                        Projection: lhs.product AS product, lhs.productLabel AS productLabel, lhs.prodFeature AS prodFeature, lhs.origProperty1 AS origProperty1, rhs.simProperty1 AS simProperty1
+                          Inner Join: lhs.product = rhs.product
+                            SubqueryAlias: lhs
+                              Cross Join: 
+                                Projection: lhs.product AS product, lhs.productLabel AS productLabel, lhs.prodFeature AS prodFeature
+                                  Inner Join: lhs.prodFeature = rhs.prodFeature, lhs.product = rhs.product
+                                    SubqueryAlias: lhs
+                                      Cross Join: 
+                                        QuadPattern (?product <http://www.w3.org/2000/01/rdf-schema#label> ?productLabel)
+                                        QuadPattern (<http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/instances/dataFromProducer19/Product890> <http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/vocabulary/productFeature> ?prodFeature)
+                                    SubqueryAlias: rhs
+                                      QuadPattern (?product <http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/vocabulary/productFeature> ?prodFeature)
+                                QuadPattern (<http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/instances/dataFromProducer19/Product890> <http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/vocabulary/productPropertyNumeric1> ?origProperty1)
+                            SubqueryAlias: rhs
+                              QuadPattern (?product <http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/vocabulary/productPropertyNumeric1> ?simProperty1)
+                        QuadPattern (<http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/instances/dataFromProducer19/Product890> <http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/vocabulary/productPropertyNumeric2> ?origProperty2)
+                    SubqueryAlias: rhs
+                      QuadPattern (?product <http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/vocabulary/productPropertyNumeric2> ?simProperty2)
