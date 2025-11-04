@@ -5,21 +5,22 @@ expression: "&string"
 ProjectionExec: expr=[ENC_PT(product@0) as product]
   CoalesceBatchesExec: target_batch_size=8192
     FilterExec: EBV(BOOLEAN_AS_TERM(NOT mark@1)), projection=[product@0]
-      NestedLoopJoinExec: join_type=LeftMark, filter=product@0 = __inner__product@1
-        ProjectionExec: expr=[product@0 as product]
-          GlobalLimitExec: skip=0, fetch=1000
-            AggregateExec: mode=Single, gby=[product@0 as product], aggr=[<uuid>]
-              CoalesceBatchesExec: target_batch_size=8192
-                HashJoinExec: mode=CollectLeft, join_type=Inner, on=[(product@0, product@1)], projection=[product@0, offer@1]
-                  DataSourceExec: [GPOS] subject=?product, predicate=<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>, object=<http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/instances/ProductType1>
-                  DataSourceExec: [GPOS] subject=?offer, predicate=<http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/vocabulary/product>, object=?product, additional_filters=[DynamicFilterPhysicalExpr [ true ]]
-        ProjectionExec: expr=[offer@0 as __inner__offer, product@1 as __inner__product, vendor@2 as __inner__vendor, country@3 as __inner__country]
-          CoalesceBatchesExec: target_batch_size=8192
-            FilterExec: EBV(EQ(ENC_TV(country@3), ENC_TV({term_type:0,value:http://downlode.org/rdf/iso-3166/countries#US,data_type:,language_tag:})))
-              CoalesceBatchesExec: target_batch_size=8192
-                HashJoinExec: mode=CollectLeft, join_type=Inner, on=[(vendor@2, vendor@0)], projection=[offer@0, product@1, vendor@2, country@4]
-                  CoalesceBatchesExec: target_batch_size=8192
-                    HashJoinExec: mode=CollectLeft, join_type=Inner, on=[(offer@0, offer@0)], projection=[offer@0, product@1, vendor@3]
-                      DataSourceExec: [GPOS] subject=?offer, predicate=<http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/vocabulary/product>, object=?product
-                      DataSourceExec: [GPOS] subject=?offer, predicate=<http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/vocabulary/vendor>, object=?vendor, additional_filters=[DynamicFilterPhysicalExpr [ true ]]
-                  DataSourceExec: [GPOS] subject=?vendor, predicate=<http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/vocabulary/country>, object=?country, additional_filters=[DynamicFilterPhysicalExpr [ true ]]
+      CoalesceBatchesExec: target_batch_size=8192
+        HashJoinExec: mode=CollectLeft, join_type=LeftMark, on=[(product@0, __inner__product@1)]
+          ProjectionExec: expr=[product@0 as product]
+            GlobalLimitExec: skip=0, fetch=1000
+              AggregateExec: mode=Single, gby=[product@0 as product], aggr=[<uuid>]
+                CoalesceBatchesExec: target_batch_size=8192
+                  HashJoinExec: mode=CollectLeft, join_type=Inner, on=[(product@0, product@1)], projection=[product@0, offer@1]
+                    DataSourceExec: [GPOS] subject=?product, predicate=<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>, object=<http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/instances/ProductType1>
+                    DataSourceExec: [GPOS] subject=?offer, predicate=<http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/vocabulary/product>, object=?product, additional_filters=[DynamicFilterPhysicalExpr [ true ]]
+          ProjectionExec: expr=[offer@0 as __inner__offer, product@1 as __inner__product]
+            CoalesceBatchesExec: target_batch_size=8192
+              FilterExec: EBV(EQ(ENC_TV(country@2), 1:http://downlode.org/rdf/iso-3166/countries#US)), projection=[offer@0, product@1]
+                CoalesceBatchesExec: target_batch_size=8192
+                  HashJoinExec: mode=CollectLeft, join_type=Inner, on=[(vendor@2, vendor@0)], projection=[offer@0, product@1, country@4]
+                    CoalesceBatchesExec: target_batch_size=8192
+                      HashJoinExec: mode=CollectLeft, join_type=Inner, on=[(offer@0, offer@0)], projection=[offer@0, product@1, vendor@3]
+                        DataSourceExec: [GPOS] subject=?offer, predicate=<http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/vocabulary/product>, object=?product
+                        DataSourceExec: [GPOS] subject=?offer, predicate=<http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/vocabulary/vendor>, object=?vendor, additional_filters=[DynamicFilterPhysicalExpr [ true ]]
+                    DataSourceExec: [GPOS] subject=?vendor, predicate=<http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/vocabulary/country>, object=?country, additional_filters=[DynamicFilterPhysicalExpr [ true ]]

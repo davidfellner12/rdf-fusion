@@ -77,9 +77,9 @@ impl RdfFusionContext {
         );
 
         let optimizer_rules =
-            create_optimizer_rules(context_view.clone(), OptimizationLevel::Full);
+            create_optimizer_rules(context_view.clone(), OptimizationLevel::Default);
         let physical_optimizer_rules =
-            create_pyhsical_optimizer_rules(OptimizationLevel::Full);
+            create_pyhsical_optimizer_rules(OptimizationLevel::Default);
 
         let state = SessionStateBuilder::new()
             .with_query_planner(Arc::new(RdfFusionPlanner::new(

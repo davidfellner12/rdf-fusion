@@ -5,14 +5,14 @@ expression: "&string"
 ProjectionExec: expr=[ENC_PT(otherProduct@0) as otherProduct, ENC_PT(sameFeatures@1) as sameFeatures]
   SortExec: TopK(fetch=10), expr=[ENC_SORT(sameFeatures@1) DESC, ENC_SORT(ENC_PT(otherProduct@0)) ASC], preserve_partitioning=[false]
     CoalesceBatchesExec: target_batch_size=8192
-      FilterExec: EBV(BOOLEAN_AS_TERM(NOT EBV(EQ(ENC_TV(otherProduct@0), ENC_TV({term_type:0,value:http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/instances/dataFromProducer13/Product636,data_type:,language_tag:})))))
+      FilterExec: EBV(BOOLEAN_AS_TERM(NOT EBV(EQ(ENC_TV(otherProduct@0), 1:http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/instances/dataFromProducer13/Product636))))
         CoalesceBatchesExec: target_batch_size=8192
           HashJoinExec: mode=CollectLeft, join_type=Inner, on=[(otherProduct@0, otherProduct@0)], projection=[otherProduct@0, sameFeatures@2]
             DataSourceExec: [GPOS] subject=?otherProduct, predicate=<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>, object=<http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/vocabulary/Product>
             ProjectionExec: expr=[otherProduct@0 as otherProduct, INT64_AS_TERM(<uuid>@1) as sameFeatures]
-              AggregateExec: mode=Single, gby=[otherProduct@1 as otherProduct], aggr=[<uuid>]
+              AggregateExec: mode=Single, gby=[otherProduct@0 as otherProduct], aggr=[<uuid>]
                 CoalesceBatchesExec: target_batch_size=8192
-                  FilterExec: EBV(EQ(ENC_TV(feature@0), ENC_TV(otherFeature@2)))
+                  FilterExec: EBV(EQ(ENC_TV(feature@0), ENC_TV(otherFeature@2))), projection=[otherProduct@1, otherFeature@2]
                     CrossJoinExec
                       DataSourceExec: [GSPO] subject=<http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/instances/dataFromProducer13/Product636>, predicate=<http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/vocabulary/productFeature>, object=?feature
                       DataSourceExec: [GPOS] subject=?otherProduct, predicate=<http://www4.wiwiss.fu-berlin.de/bizer/bsbm/v01/vocabulary/productFeature>, object=?otherFeature

@@ -15,7 +15,24 @@ use rdf_fusion_logical::paths::PropertyPathLoweringRule;
 use rdf_fusion_logical::patterns::PatternLoweringRule;
 use rdf_fusion_physical::join::NestedLoopJoinProjectionPushDown;
 use std::sync::Arc;
+use datafusion::optimizer::common_subexpr_eliminate::CommonSubexprEliminate;
+use datafusion::optimizer::decorrelate_lateral_join::DecorrelateLateralJoin;
+use datafusion::optimizer::eliminate_cross_join::EliminateCrossJoin;
+use datafusion::optimizer::eliminate_duplicated_expr::EliminateDuplicatedExpr;
+use datafusion::optimizer::eliminate_filter::EliminateFilter;
+use datafusion::optimizer::eliminate_group_by_constant::EliminateGroupByConstant;
+use datafusion::optimizer::eliminate_join::EliminateJoin;
 use datafusion::optimizer::eliminate_nested_union::EliminateNestedUnion;
+use datafusion::optimizer::eliminate_one_union::EliminateOneUnion;
+use datafusion::optimizer::eliminate_outer_join::EliminateOuterJoin;
+use datafusion::optimizer::extract_equijoin_predicate::ExtractEquijoinPredicate;
+use datafusion::optimizer::filter_null_join_keys::FilterNullJoinKeys;
+use datafusion::optimizer::optimize_projections::OptimizeProjections;
+use datafusion::optimizer::propagate_empty_relation::PropagateEmptyRelation;
+use datafusion::optimizer::push_down_filter::PushDownFilter;
+use datafusion::optimizer::push_down_limit::PushDownLimit;
+use datafusion::optimizer::simplify_expressions::SimplifyExpressions;
+use datafusion::optimizer::single_distinct_to_groupby::SingleDistinctToGroupBy;
 
 /// Creates a list of optimizer rules based on the given `optimization_level`.
 pub fn create_optimizer_rules(
@@ -41,8 +58,8 @@ pub fn create_optimizer_rules(
             let mut rules: Vec<Arc<dyn OptimizerRule + Send + Sync>> = Vec::new();
 
             rules.extend(lowering_rules);
-            /*
-            rules.push(Arc::new(SimplifySparqlExpressionsRule::new(
+
+            /*rules.push(Arc::new(SimplifySparqlExpressionsRule::new(
                 context.encodings().clone(),
                 Arc::clone(context.functions()),
             )));*/
@@ -51,7 +68,34 @@ pub fn create_optimizer_rules(
             // TODO: Replace with a good subset
             rules.extend(create_essential_datafusion_optimizers());
             //rules.push(Arc::new(EliminateNestedUnion::new()));
+            rules.push(Arc::new(SimplifyExpressions::new()));
+            //rules.push(Arc::new(ReplaceDistinctWithAggregate::new()));
+            //(rules).push(Arc::new(ExtractEquijoinPredicate::new()));
+            //rules.push(Arc::new(DecorrelatePredicateSubquery::new()));
+            //rules.push(Arc::new(ScalarSubqueryToJoin::new()));
+            //rules.push(Arc::new(DecorrelateLateralJoin::new()));
+            rules.push(Arc::new(ExtractEquijoinPredicate::new()));
+            //rules.push(Arc::new(EliminateDuplicatedExpr::new()));
+            //rules.push(Arc::new(EliminateFilter::new()));
+            rules.push(Arc::new(EliminateCrossJoin::new()));
+            //rules.push(Arc::new(EliminateLimit::new()));
+            //rules.push(Arc::new(PropagateEmptyRelation::new()));
 
+            // Must be after PropagateEmptyRelation
+            //Arc::new(EliminateOneUnion::new()),
+            //Arc::new(FilterNullJoinKeys::default()),
+            //Arc::new(EliminateOuterJoin::new()),
+            // Filters can't be pushed down past Limits, we should do PushDownFilter after PushDownLimit
+            //Arc::new(PushDownLimit::new()),
+            //Arc::new(PushDownFilter::new()),
+            //Arc::new(SingleDistinctToGroupBy::new()),
+            // The previous optimizations added expressions and projections,
+            // that might benefit from the following rules
+
+
+            //rules.push(Arc::new(EliminateGroupByConstant::new()));
+            rules.push(Arc::new(CommonSubexprEliminate::new()));
+            rules.push(Arc::new(OptimizeProjections::new()));
             /*rules.push(Arc::new(SimplifySparqlExpressionsRule::new(
                 context.encodings().clone(),
                 Arc::clone(context.functions()),
