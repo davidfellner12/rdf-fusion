@@ -1,2 +1,0 @@
-RdfFusion Bench CLI
-============

@@ -1,4 +1,0 @@
-RDF Fusion CLI
-============
-
-TODO

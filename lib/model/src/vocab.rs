@@ -1,1 +1,0 @@
-pub use oxrdf::vocab::*;

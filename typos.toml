@@ -1,5 +1,0 @@
-[files]
-extend-exclude = ["**/*.svg"]
-
-[default.extend-words]
-pn = "pn" # Common abbreviation in Turtle grammar
