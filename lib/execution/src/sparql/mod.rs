@@ -22,12 +22,12 @@ pub use spargebra::SparqlSyntaxError;
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum OptimizationLevel {
     /// No optimizations, except rewrites that are necessary for a working query.
+    #[default]
     None,
     /// A balanced default optimization level. Suitable for simple queries or those handling modest
     /// data volumes.
     Default,
     /// Runs all optimizations. Ideal for complex queries or those processing large datasets.
-    #[default]
     Full,
 }
 
@@ -36,6 +36,7 @@ pub enum OptimizationLevel {
 pub struct QueryOptions {
     /// The defined optimization level
     pub optimization_level: OptimizationLevel,
+    pub max_optimizer_passes: Option<usize>,
 }
 
 /// Options for SPARQL update evaluation.

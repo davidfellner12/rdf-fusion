@@ -12,7 +12,6 @@ pub fn is_verbose() -> bool {
             "Running in quiet mode. Set RDF_FUSION_CRITERION_VERBOSE=1 to enable verbose output."
         );
     }
-
     is_verbose
 }
 

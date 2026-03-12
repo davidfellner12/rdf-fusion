@@ -2,7 +2,7 @@ use crate::plans::{consume_result, run_plan_assertions};
 use anyhow::Context;
 use datafusion::physical_plan::displayable;
 use insta::assert_snapshot;
-use rdf_fusion::execution::sparql::{QueryExplanation, QueryOptions};
+use rdf_fusion::execution::sparql::{create_pyhsical_optimizer_rules, OptimizationLevel, QueryExplanation, QueryOptions};
 use rdf_fusion_bench::benchmarks::Benchmark;
 use rdf_fusion_bench::benchmarks::bsbm::{
     BsbmBenchmark, BsbmBusinessIntelligenceQueryName, BusinessIntelligenceUseCase,
@@ -11,6 +11,7 @@ use rdf_fusion_bench::benchmarks::bsbm::{
 use rdf_fusion_bench::environment::{BenchmarkContext, RdfFusionBenchContext};
 use rdf_fusion_bench::operation::SparqlRawOperation;
 use std::path::PathBuf;
+use datafusion::physical_optimizer::optimizer::PhysicalOptimizer;
 
 #[tokio::test]
 pub async fn optimized_logical_plan_bsbm_business_intelligence() {
@@ -23,6 +24,7 @@ pub async fn optimized_logical_plan_bsbm_business_intelligence() {
     .await;
 }
 
+
 #[tokio::test]
 pub async fn execution_plan_bsbm_business_intelligence() {
     for_all_explanations(|name, explanation| {
@@ -33,6 +35,33 @@ pub async fn execution_plan_bsbm_business_intelligence() {
     })
     .await;
 }
+
+#[tokio::test]
+pub async fn optimized_physical_plan_bsbm_business_intelligence() {
+    use datafusion::physical_plan::displayable;
+    use rdf_fusion::execution::sparql::{create_pyhsical_optimizer_rules, OptimizationLevel, QueryExplanation};
+    use std::sync::Arc;
+
+    for_all_explanations(|name, explanation: QueryExplanation| {
+        let mut plan = explanation.execution_plan.clone();
+
+        let rules = create_pyhsical_optimizer_rules(OptimizationLevel::Full);
+
+        for rule in rules {
+            plan = rule.optimize(plan.clone(), &Default::default()).unwrap();
+        }
+
+        let plan_string = displayable(plan.as_ref())
+            .indent(false)
+            .to_string();
+        assert_snapshot!(
+            format!("{name} (Optimized Physical Plan)"),
+            &plan_string
+        );
+    })
+        .await;
+}
+
 
 async fn for_all_explanations(assertion: impl Fn(String, QueryExplanation) -> ()) {
     let benchmarking_context =

@@ -27,7 +27,12 @@ pub async fn evaluate_query(
     query: &Query,
     options: QueryOptions,
 ) -> Result<(QueryResults, QueryExplanation), QueryEvaluationError> {
+
+    let mut config = ctx.session_context().state().config().clone();
+    config.options_mut().optimizer.max_passes = 1;
+
     let session_state = SessionStateBuilder::from(ctx.session_context().state())
+        .with_config(config)
         .with_optimizer_rules(create_optimizer_rules(
             ctx.create_view(),
             options.optimization_level,

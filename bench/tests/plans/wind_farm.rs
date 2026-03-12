@@ -33,6 +33,32 @@ pub async fn execution_plan_wind_farm() {
     .await;
 }
 
+#[tokio::test]
+pub async fn optimized_physical_plan_wind_farm() {
+    use rdf_fusion::execution::sparql::{create_pyhsical_optimizer_rules, OptimizationLevel};
+    use datafusion::physical_plan::displayable;
+
+    for_all_explanations(|name, explanation| {
+        let mut plan = explanation.execution_plan.clone();
+
+        let rules = create_pyhsical_optimizer_rules(OptimizationLevel::Full);
+
+        for rule in rules {
+            plan = rule.optimize(plan.clone(), &Default::default()).unwrap();
+        }
+
+        let plan_string = displayable(plan.as_ref())
+            .indent(false)
+            .to_string();
+
+        assert_snapshot!(
+            format!("{name} (Optimized Physical Plan)"),
+            &plan_string
+        );
+    })
+        .await;
+}
+
 async fn for_all_explanations(assertion: impl Fn(String, QueryExplanation) -> ()) {
     let benchmarking_context =
         RdfFusionBenchContext::new_for_criterion(PathBuf::from("./data"), 1);
