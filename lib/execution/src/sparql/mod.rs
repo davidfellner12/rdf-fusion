@@ -16,9 +16,6 @@ pub use spargebra::SparqlSyntaxError;
 
 /// Defines how many optimizations the query optimizer should apply.
 ///
-/// Currently, the default value is [OptimizationLevel::Full], as we are still searching for a
-/// subset that performs well on many queries. Once this subset has been identified, the default
-/// value will be [OptimizationLevel::Default].
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum OptimizationLevel {
     /// No optimizations, except rewrites that are necessary for a working query.
