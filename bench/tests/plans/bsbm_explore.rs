@@ -2,7 +2,7 @@ use crate::plans::{consume_result, run_plan_assertions};
 use anyhow::Context;
 use datafusion::physical_plan::displayable;
 use insta::assert_snapshot;
-use rdf_fusion::execution::sparql::{QueryExplanation, QueryOptions};
+use rdf_fusion::execution::sparql::{OptimizationLevel, QueryExplanation, QueryOptions};
 use rdf_fusion_bench::benchmarks::Benchmark;
 use rdf_fusion_bench::benchmarks::bsbm::{
     BsbmBenchmark, BsbmExploreQueryName, ExploreUseCase, NumProducts,
@@ -19,7 +19,7 @@ pub async fn optimized_logical_plan_bsbm_explore() {
             &explanation.optimized_logical_plan.to_string()
         )
     })
-    .await;
+        .await;
 }
 
 #[tokio::test]
@@ -30,14 +30,13 @@ pub async fn execution_plan_bsbm_explore() {
             .to_string();
         assert_snapshot!(format!("{name} (Execution Plan)"), &string)
     })
-    .await;
+        .await;
 }
 
 #[tokio::test]
 pub async fn optimized_physical_plan_bsbm_explore() {
-    use rdf_fusion::execution::sparql::{create_pyhsical_optimizer_rules, OptimizationLevel};
     use datafusion::physical_plan::displayable;
-    use std::sync::Arc;
+    use rdf_fusion::execution::sparql::{create_pyhsical_optimizer_rules, OptimizationLevel};
 
     for_all_explanations(|name, explanation| {
         let mut plan = explanation.execution_plan.clone();
@@ -48,23 +47,77 @@ pub async fn optimized_physical_plan_bsbm_explore() {
             plan = rule.optimize(plan.clone(), &Default::default()).unwrap();
         }
 
-        let plan_string = displayable(plan.as_ref())
-            .indent(false)
-            .to_string();
-
-        assert_snapshot!(
-            format!("{name} (Optimized Physical Plan)"),
-            &plan_string
-        );
+        let plan_string = displayable(plan.as_ref()).indent(false).to_string();
+        assert_snapshot!(format!("{name} (Optimized Physical Plan)"), &plan_string);
     })
         .await;
+}
+
+#[tokio::test]
+pub async fn optimizer_passes_comparison_bsbm_explore() {
+    let benchmarking_context =
+        RdfFusionBenchContext::new_for_criterion(PathBuf::from("./data"), 1);
+
+    let benchmark =
+        BsbmBenchmark::<ExploreUseCase>::try_new(NumProducts::N1_000, None).unwrap();
+    let benchmark_context = benchmarking_context
+        .create_benchmark_context(benchmark.name())
+        .unwrap();
+
+    let store = benchmark.prepare_store(&benchmark_context).await.unwrap();
+
+    let mut any_difference = false;
+
+    for query_name in BsbmExploreQueryName::list_queries() {
+        let query = get_query_to_execute(benchmark.clone(), &benchmark_context, query_name);
+
+        // Baseline: Default (1 pass)
+        let (result, explanation) = store
+            .explain_query_opt(
+                query.text(),
+                QueryOptions {
+                    optimization_level: OptimizationLevel::Default,
+                },
+            )
+            .await
+            .unwrap();
+        consume_result(result).await;
+        let baseline = explanation.optimized_logical_plan.to_string();
+
+        // Compare against Full (3 passes)
+        let (result, explanation) = store
+            .explain_query_opt(
+                query.text(),
+                QueryOptions {
+                    optimization_level: OptimizationLevel::Full,
+                },
+            )
+            .await
+            .unwrap();
+        consume_result(result).await;
+        let plan = explanation.optimized_logical_plan.to_string();
+
+        if baseline != plan {
+            any_difference = true;
+            println!("[CHANGED] {query_name}: Default (1 pass) vs Full (3 passes) differ");
+        } else {
+            println!("[OK]      {query_name}: Default (1 pass) vs Full (3 passes) identical");
+        }
+    }
+
+    println!("\n{}", "=".repeat(60));
+    if any_difference {
+        println!("RESULT: plans CHANGED between Default and Full optimization level");
+    } else {
+        println!("RESULT: plans are IDENTICAL between Default and Full optimization level");
+    }
+    println!("{}", "=".repeat(60));
 }
 
 async fn for_all_explanations(assertion: impl Fn(String, QueryExplanation) -> ()) {
     let benchmarking_context =
         RdfFusionBenchContext::new_for_criterion(PathBuf::from("./data"), 1);
 
-    // Load the benchmark data and set max query count to one.
     let benchmark =
         BsbmBenchmark::<ExploreUseCase>::try_new(NumProducts::N1_000, None).unwrap();
     let benchmark_name = benchmark.name();
@@ -73,10 +126,10 @@ async fn for_all_explanations(assertion: impl Fn(String, QueryExplanation) -> ()
         .unwrap();
 
     let store = benchmark.prepare_store(&benchmark_context).await.unwrap();
+
     for query_name in BsbmExploreQueryName::list_queries() {
         let benchmark_name = format!("BSBM Explore - {query_name}");
-        let query =
-            get_query_to_execute(benchmark.clone(), &benchmark_context, query_name);
+        let query = get_query_to_execute(benchmark.clone(), &benchmark_context, query_name);
 
         let (results, explanation) = store
             .explain_query_opt(query.text(), QueryOptions::default())
@@ -94,7 +147,7 @@ fn get_query_to_execute(
     query_name: BsbmExploreQueryName,
 ) -> SparqlRawOperation<BsbmExploreQueryName> {
     let query = benchmark
-        .list_raw_operations(&benchmark_context)
+        .list_raw_operations(benchmark_context)
         .context("Could not list raw operations for BSBM Explore benchmark. Have you prepared a bsbm-1000 dataset?")
         .unwrap()
         .into_iter()

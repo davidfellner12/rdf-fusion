@@ -69,7 +69,7 @@
                     Arc::clone(context.functions()),
                 )));
                 //FOR bsbm_explore, but not for bsbm_business_intelligence
-                rules.push(Arc::new(ReplaceDistinctWithAggregate::new()));
+                //rules.push(Arc::new(ReplaceDistinctWithAggregate::new()));
 
                 rules
             }
@@ -84,7 +84,7 @@
                     Arc::clone(context.functions()),
                 )));
                 //FOR bsbm_explore, but not for bsbm_business_intelligence
-                rules.push(Arc::new(ReplaceDistinctWithAggregate::new()));
+                //rules.push(Arc::new(ReplaceDistinctWithAggregate::new()));
 
                 rules.push(Arc::new(ReplaceDistinctWithAggregate::new()));
                 rules.push(Arc::new(DecorrelatePredicateSubquery::new()));

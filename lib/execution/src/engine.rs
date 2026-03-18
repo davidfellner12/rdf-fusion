@@ -26,6 +26,8 @@ use rdf_fusion_logical::{ActiveGraph, RdfFusionLogicalPlanBuilderContext};
 use rdf_fusion_model::{DFResult, NamedOrBlankNodeRef};
 use rdf_fusion_model::{GraphName, GraphNameRef, NamedNodeRef, QuadRef, TermRef};
 use std::sync::Arc;
+use datafusion::optimizer::OptimizerRule;
+use datafusion::physical_optimizer::PhysicalOptimizerRule;
 
 /// Represents a connection to an instance of an RDF Fusion engine.
 ///
@@ -34,7 +36,7 @@ use std::sync::Arc;
 /// - An [RdfFusionFunctionRegistry] that holds the currently registered RDF Fusion built-ins.
 /// - A reference to a quad storage.
 #[derive(Clone)]
-pub struct RdfFusionContext {
+pub struct  RdfFusionContext {
     /// The DataFusion [SessionContext].
     ctx: SessionContext,
     /// Holds references to the registered built-in functions.
@@ -72,19 +74,12 @@ impl RdfFusionContext {
             storage.encoding(),
         );
 
-        let optimizer_rules =
-            create_optimizer_rules(context_view.clone(), OptimizationLevel::Full);
-        let physical_optimizer_rules =
-            create_pyhsical_optimizer_rules(OptimizationLevel::Full);
-
         let state = SessionStateBuilder::new()
             .with_query_planner(Arc::new(RdfFusionPlanner::new(
                 context_view,
                 Arc::clone(&storage),
             )))
             .with_aggregate_functions(vec![AggregateUDF::from(FirstValue::new()).into()])
-            .with_optimizer_rules(optimizer_rules)
-            .with_physical_optimizer_rules(physical_optimizer_rules)
             .with_runtime_env(runtime_env)
             .with_config(config)
             .build();

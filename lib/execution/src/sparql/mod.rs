@@ -22,13 +22,27 @@ pub use spargebra::SparqlSyntaxError;
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum OptimizationLevel {
     /// No optimizations, except rewrites that are necessary for a working query.
-    #[default]
+    /// Uses DataFusion's default max_passes.
     None,
     /// A balanced default optimization level. Suitable for simple queries or those handling modest
-    /// data volumes.
+    /// data volumes. Uses 1 optimizer pass.
+    #[default]
     Default,
     /// Runs all optimizations. Ideal for complex queries or those processing large datasets.
+    /// Uses 3 optimizer passes.
     Full,
+}
+
+impl OptimizationLevel {
+    /// Returns the number of optimizer passes to use for this level.
+    /// Returns `None` for `None` level, letting DataFusion use its own default.
+    pub fn max_passes(&self) -> Option<usize> {
+        match self {
+            OptimizationLevel::None    => None,
+            OptimizationLevel::Default => Some(1),
+            OptimizationLevel::Full    => Some(3),
+        }
+    }
 }
 
 /// Options for SPARQL query evaluation.
@@ -36,7 +50,6 @@ pub enum OptimizationLevel {
 pub struct QueryOptions {
     /// The defined optimization level
     pub optimization_level: OptimizationLevel,
-    pub max_optimizer_passes: Option<usize>,
 }
 
 /// Options for SPARQL update evaluation.

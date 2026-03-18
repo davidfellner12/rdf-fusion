@@ -4,38 +4,27 @@ mod utils;
 
 use crate::utils::verbose::{is_verbose, print_query_details};
 use crate::utils::{consume_results, create_runtime};
-
 use anyhow::Context;
 use codspeed_criterion_compat::{criterion_group, criterion_main, Criterion};
-
 use rdf_fusion::execution::sparql::{OptimizationLevel, QueryOptions};
-
 use rdf_fusion_bench::benchmarks::Benchmark;
 use rdf_fusion_bench::benchmarks::windfarm::{
-    NumTurbines,
-    WindFarmBenchmark,
-    WindFarmQueryName,
-    get_wind_farm_raw_sparql_operation,
+    NumTurbines, WindFarmBenchmark, WindFarmQueryName, get_wind_farm_raw_sparql_operation,
 };
-
 use rdf_fusion_bench::environment::{BenchmarkContext, RdfFusionBenchContext};
 use rdf_fusion_bench::operation::SparqlRawOperation;
-
 use std::path::PathBuf;
 use std::time::Duration;
 
 fn opts(level: OptimizationLevel) -> QueryOptions {
     QueryOptions {
         optimization_level: level,
-        max_optimizer_passes: Some(1),
     }
 }
 
-/// Run WindFarm benchmark with 1 partition
 fn wind_farm_16_1_partition(c: &mut Criterion) {
     let benchmarking_context =
         RdfFusionBenchContext::new_for_criterion(PathBuf::from("./data"), 1);
-
     wind_farm_16(c, benchmarking_context);
 }
 
@@ -50,7 +39,6 @@ fn wind_farm_16(
         benchmarking_context,
         &|benchmark: WindFarmBenchmark,
           benchmark_context: BenchmarkContext| {
-
             let disabled_queries = vec![
                 WindFarmQueryName::MultiGrouped1,
                 WindFarmQueryName::MultiGrouped2,
@@ -66,10 +54,7 @@ fn wind_farm_16(
                         format!(
                             "Wind Farm 16 (target_partitions={target_partitions}) - {query_name}"
                         ),
-                        get_wind_farm_raw_sparql_operation(
-                            &benchmark_context,
-                            query_name,
-                        )
+                        get_wind_farm_raw_sparql_operation(&benchmark_context, query_name)
                             .unwrap(),
                     )
                 })
@@ -88,7 +73,6 @@ criterion_group!(
 
 criterion_main!(wind_farm);
 
-/// Executes planning and execution benchmarks
 fn execute_benchmark(
     c: &mut Criterion,
     benchmarking_context: RdfFusionBenchContext,
@@ -97,14 +81,10 @@ fn execute_benchmark(
         BenchmarkContext,
     ) -> Vec<(String, SparqlRawOperation<WindFarmQueryName>)>,
 ) {
-
     let verbose = is_verbose();
-
-    let runtime =
-        create_runtime(benchmarking_context.options().target_partitions.unwrap());
+    let runtime = create_runtime(benchmarking_context.options().target_partitions.unwrap());
 
     let benchmark = WindFarmBenchmark::new(NumTurbines::N16);
-
     let benchmark_name = benchmark.name();
 
     let benchmark_context = benchmarking_context
@@ -129,15 +109,11 @@ Execute `just prepare-benches` before running benchmarks.
     ];
 
     for (benchmark_name, query) in queries(benchmark, benchmark_context) {
-
         if verbose {
             runtime
                 .block_on(print_query_details(
                     &store,
-                    QueryOptions {
-                        optimization_level: OptimizationLevel::Default,
-                        max_optimizer_passes: Some(1),
-                    },
+                    opts(OptimizationLevel::Default),
                     &query.query_name().to_string(),
                     query.text(),
                 ))
@@ -145,29 +121,22 @@ Execute `just prepare-benches` before running benchmarks.
         }
 
         for (name, level) in profiles {
-
             c.bench_function(&format!("Planning {name}: {benchmark_name}"), |b| {
                 b.to_async(&runtime).iter(|| async {
-
                     let result = store
                         .query_opt(query.text(), opts(level))
                         .await;
-
                     assert!(result.is_ok());
-
                 });
             });
 
             c.bench_function(&format!("Execution {name}: {benchmark_name}"), |b| {
                 b.to_async(&runtime).iter(|| async {
-
                     let result = store
                         .query_opt(query.text(), opts(level))
                         .await
                         .unwrap();
-
                     consume_results(result).await.unwrap();
-
                 });
             });
         }

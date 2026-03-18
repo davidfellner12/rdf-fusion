@@ -18,15 +18,12 @@ use rdf_fusion_bench::operation::SparqlRawOperation;
 use std::path::PathBuf;
 use std::time::Duration;
 
-/// Always run optimizer with exactly 1 pass
 fn opts(level: OptimizationLevel) -> QueryOptions {
     QueryOptions {
         optimization_level: level,
-        max_optimizer_passes: Some(1),
     }
 }
 
-/// Run BSBM BI benchmark with 1 partition
 fn bsbm_business_intelligence_10000_1_partition(c: &mut Criterion) {
     let benchmarking_context =
         RdfFusionBenchContext::new_for_criterion(PathBuf::from("./data"), 1);
@@ -60,7 +57,6 @@ fn bsbm_business_intelligence_10000(
                 })
                 .collect::<Vec<_>>();
 
-            // Include an extra query (Query 64)
             queries.push((
                 format!(
                     "BSBM BI 10000 (target_partitions={target_partitions}) - Query 64"
@@ -83,7 +79,6 @@ criterion_group!(
 
 criterion_main!(bsbm_business_intelligence);
 
-/// Executes planning and execution benchmarks
 fn execute_benchmark(
     c: &mut Criterion,
     benchmarking_context: RdfFusionBenchContext,
@@ -117,15 +112,11 @@ Execute `just prepare-benches` before running benchmarks.
         .unwrap();
 
     for (benchmark_name, query) in queries(benchmark, benchmark_context) {
-
         if verbose {
             runtime
                 .block_on(print_query_details(
                     &store,
-                    QueryOptions {
-                        optimization_level: OptimizationLevel::Default,
-                        max_optimizer_passes: Some(1),
-                    },
+                    opts(OptimizationLevel::Default),
                     &query.query_name().to_string(),
                     query.text(),
                 ))
@@ -139,13 +130,11 @@ Execute `just prepare-benches` before running benchmarks.
         ];
 
         for (name, level) in profiles {
-
             c.bench_function(&format!("Planning {name}: {benchmark_name}"), |b| {
                 b.to_async(&runtime).iter(|| async {
                     let result = store
                         .query_opt(query.text(), opts(level))
                         .await;
-
                     assert!(result.is_ok());
                 });
             });
@@ -156,7 +145,6 @@ Execute `just prepare-benches` before running benchmarks.
                         .query_opt(query.text(), opts(level))
                         .await
                         .unwrap();
-
                     consume_results(result).await.unwrap();
                 });
             });
