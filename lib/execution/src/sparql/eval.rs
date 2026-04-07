@@ -3,7 +3,7 @@ use crate::results::{QueryResults, QuerySolutionStream, QueryTripleStream};
 use crate::sparql::error::QueryEvaluationError;
 use crate::sparql::optimizer::{create_optimizer_rules, create_pyhsical_optimizer_rules};
 use crate::sparql::rewriting::GraphPatternRewriter;
-use crate::sparql::{Query, QueryDataset, QueryExplanation, QueryOptions};
+use crate::sparql::{OptimizationLevel, Query, QueryDataset, QueryExplanation, QueryOptions};
 use datafusion::arrow::datatypes::Schema;
 use datafusion::common::instant::Instant;
 use datafusion::execution::{SessionState, SessionStateBuilder};
@@ -30,7 +30,13 @@ pub async fn evaluate_query(
 
     let mut config = ctx.session_context().state().config().clone();
 
-    if let Some(passes) = options.optimization_level.max_passes() {
+    if let Some(passes) = options.max_optimizer_passes {
+        config.options_mut().optimizer.max_passes = passes;
+
+    } else if let Some(passes) = OptimizationLevel::max_passes_from_env() {
+        config.options_mut().optimizer.max_passes = passes;
+
+    } else if let Some(passes) = options.optimization_level.max_passes() {
         config.options_mut().optimizer.max_passes = passes;
     }
 

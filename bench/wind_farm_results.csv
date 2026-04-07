@@ -1,0 +1,32 @@
+    === Optimization: None ===
+    Query,Planning None (ms),Execution None (ms)
+    Wind Farm 16 (target_partitions=1) - GroupedProduction1,13.038,567.095
+    Wind Farm 16 (target_partitions=1) - GroupedProduction2,30.129,836.598
+    Wind Farm 16 (target_partitions=1) - GroupedProduction3,10.692,604.928
+    Wind Farm 16 (target_partitions=1) - GroupedProduction4,9.883,691.198
+    Wind Farm 16 (target_partitions=1) - ProductionQuery1,5.597,186.320
+    Wind Farm 16 (target_partitions=1) - ProductionQuery2,12.330,386.912
+    Wind Farm 16 (target_partitions=1) - ProductionQuery3,5.064,222.008
+    Wind Farm 16 (target_partitions=1) - ProductionQuery4,4.506,310.682
+
+    === Optimization: Default ===
+    Query,Planning Default (ms) (1),Planning Default (ms) (2),Planning Default (ms) (3),Execution Default (ms) (1),Execution Default (ms) (2),Execution Default (ms) (3),Delta% Exec vs None
+    Wind Farm 16 (target_partitions=1) - GroupedProduction1,14.305,16.189,18.513,246.456,250.792,259.752,+56.5%
+    Wind Farm 16 (target_partitions=1) - GroupedProduction2,32.258,32.462,34.126,334.707,328.313,328.863,+60.0%
+    Wind Farm 16 (target_partitions=1) - GroupedProduction3,14.448,16.094,17.610,308.402,320.430,312.432,+49.0%
+    Wind Farm 16 (target_partitions=1) - GroupedProduction4,11.625,13.675,16.145,471.628,471.576,453.978,+31.8%
+    Wind Farm 16 (target_partitions=1) - ProductionQuery1,6.438,7.894,9.472,78.658,80.308,79.554,+57.8%
+    Wind Farm 16 (target_partitions=1) - ProductionQuery2,17.237,17.754,19.552,174.953,161.529,164.914,+54.8%
+    Wind Farm 16 (target_partitions=1) - ProductionQuery3,5.933,7.635,8.951,161.680,162.306,151.342,+27.2%
+    Wind Farm 16 (target_partitions=1) - ProductionQuery4,4.540,6.003,8.188,294.261,316.361,318.185,+5.3%
+
+    === Optimization: Full ===
+    Query,Planning Full (ms) (1),Planning Full (ms) (2),Planning Full (ms) (3),Execution Full (ms) (1),Execution Full (ms) (2),Execution Full (ms) (3),Delta% Exec vs None
+    Wind Farm 16 (target_partitions=1) - GroupedProduction1,14.855,17.156,21.254,251.305,239.205,252.798,+55.7%
+    Wind Farm 16 (target_partitions=1) - GroupedProduction2,30.482,33.873,39.822,316.764,313.511,317.434,+62.1%
+    Wind Farm 16 (target_partitions=1) - GroupedProduction3,13.424,15.621,19.067,305.734,305.891,309.791,+49.5%
+    Wind Farm 16 (target_partitions=1) - GroupedProduction4,13.322,15.650,16.796,439.388,436.535,393.606,+36.4%
+    Wind Farm 16 (target_partitions=1) - ProductionQuery1,8.915,10.656,11.987,79.994,88.554,82.070,+57.1%
+    Wind Farm 16 (target_partitions=1) - ProductionQuery2,17.056,19.637,22.006,156.148,171.271,165.538,+59.6%
+    Wind Farm 16 (target_partitions=1) - ProductionQuery3,6.593,8.601,10.854,158.931,147.441,155.063,+28.4%
+    Wind Farm 16 (target_partitions=1) - ProductionQuery4,5.335,7.482,11.047,288.491,298.581,307.602,+7.1%

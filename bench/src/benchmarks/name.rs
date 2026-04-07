@@ -29,6 +29,14 @@ pub enum BenchmarkName {
         #[arg(short, long, default_value = "400")]
         num_turbines: NumTurbines,
     },
+
+    //TODO future benchmark for discussion
+    /// Represents the WatDiv benchmark.
+    WatDiv {
+        /// Provides an upper bound on the number of queries to be executed.
+        #[arg(short, long)]
+        max_query_count: Option<u64>,
+    },
 }
 
 impl BenchmarkName {
@@ -41,6 +49,9 @@ impl BenchmarkName {
             }
             BenchmarkName::WindFarm { num_turbines } => {
                 format!("wind-farm-{num_turbines}")
+            }
+            BenchmarkName::WatDiv { .. } => {
+                "watdiv".to_string()
             }
         }
     }
@@ -68,6 +79,10 @@ impl BenchmarkName {
             },
             BenchmarkName::WindFarm { num_turbines } => {
                 format!("windfarm-{num_turbines}")
+            },
+            BenchmarkName::WatDiv { max_query_count } => match max_query_count {
+                Some(max_query_count) => format!("watdiv-{max_query_count}"),
+                None => "watdiv".to_string(),
             }
         }
     }
@@ -100,7 +115,13 @@ impl Display for BenchmarkName {
             },
             BenchmarkName::WindFarm { num_turbines } => {
                 write!(f, "Wind Farm: num_turbines={num_turbines}")
-            }
+            },
+            BenchmarkName::WatDiv { max_query_count } => match max_query_count {
+                Some(max_query_count) => {
+                    write!(f, "WatDiv: max_query_count={max_query_count}")
+                }
+                None => write!(f, "WatDiv"),
+            },
         }
     }
 }

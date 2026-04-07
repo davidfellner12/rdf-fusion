@@ -6,6 +6,8 @@ pub mod bsbm;
 mod name;
 pub mod windfarm;
 
+pub mod watdiv;
+
 use crate::environment::BenchmarkContext;
 use crate::report::BenchmarkReport;
 pub use name::BenchmarkName;

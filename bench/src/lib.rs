@@ -4,11 +4,13 @@ use crate::benchmarks::bsbm::{
     BsbmBenchmark, BusinessIntelligenceUseCase, ExploreUseCase,
 };
 use crate::benchmarks::windfarm::WindFarmBenchmark;
+use crate::benchmarks::watdiv::WatDivBenchmark;
 use crate::benchmarks::{Benchmark, BenchmarkName};
 use crate::environment::RdfFusionBenchContext;
 use clap::ValueEnum;
 use std::fs;
 use std::path::PathBuf;
+
 
 pub mod benchmarks;
 pub mod environment;
@@ -133,6 +135,9 @@ fn create_benchmark_instance(
         )?),
         BenchmarkName::WindFarm { num_turbines } => {
             Box::new(WindFarmBenchmark::new(num_turbines))
+        },
+        BenchmarkName::WatDiv { max_query_count } => {
+            Box::new(WatDivBenchmark::new(max_query_count))
         }
     };
     Ok(benchmark)

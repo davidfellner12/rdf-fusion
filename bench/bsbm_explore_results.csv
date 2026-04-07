@@ -1,0 +1,8 @@
+=== Optimization: None ===
+Query,Planning None (ms),Execution None (ms)
+
+=== Optimization: Default ===
+Query,Planning Default (ms) (1),Planning Default (ms) (2),Planning Default (ms) (3),Execution Default (ms) (1),Execution Default (ms) (2),Execution Default (ms) (3),Delta% Exec vs None,ExecOnly (ms) (p=1)
+
+=== Optimization: Full ===
+Query,Planning Full (ms) (1),Planning Full (ms) (2),Planning Full (ms) (3),Execution Full (ms) (1),Execution Full (ms) (2),Execution Full (ms) (3),Delta% Exec vs None,ExecOnly (ms) (p=1)

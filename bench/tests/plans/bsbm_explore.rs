@@ -40,13 +40,10 @@ pub async fn optimized_physical_plan_bsbm_explore() {
 
     for_all_explanations(|name, explanation| {
         let mut plan = explanation.execution_plan.clone();
-
-        let rules = create_pyhsical_optimizer_rules(OptimizationLevel::Full);
-
+        let rules = create_pyhsical_optimizer_rules(OptimizationLevel::Default);
         for rule in rules {
             plan = rule.optimize(plan.clone(), &Default::default()).unwrap();
         }
-
         let plan_string = displayable(plan.as_ref()).indent(false).to_string();
         assert_snapshot!(format!("{name} (Optimized Physical Plan)"), &plan_string);
     })
@@ -67,49 +64,52 @@ pub async fn optimizer_passes_comparison_bsbm_explore() {
     let store = benchmark.prepare_store(&benchmark_context).await.unwrap();
 
     let mut any_difference = false;
+    let pairs = [(1usize, 2usize), (1, 3), (2, 3)];
+
+    println!("\n{}", "=".repeat(60));
+    println!("BENCHMARK: BSBM Explore");
+    println!("{}", "=".repeat(60));
 
     for query_name in BsbmExploreQueryName::list_queries() {
         let query = get_query_to_execute(benchmark.clone(), &benchmark_context, query_name);
 
-        // Baseline: Default (1 pass)
-        let (result, explanation) = store
-            .explain_query_opt(
-                query.text(),
-                QueryOptions {
-                    optimization_level: OptimizationLevel::Default,
-                },
-            )
-            .await
-            .unwrap();
-        consume_result(result).await;
-        let baseline = explanation.optimized_logical_plan.to_string();
+        println!("\n  Query: {query_name}");
+        println!("  {}", "-".repeat(40));
 
-        // Compare against Full (3 passes)
-        let (result, explanation) = store
-            .explain_query_opt(
-                query.text(),
-                QueryOptions {
-                    optimization_level: OptimizationLevel::Full,
-                },
-            )
-            .await
-            .unwrap();
-        consume_result(result).await;
-        let plan = explanation.optimized_logical_plan.to_string();
+        let mut plans: Vec<(usize, String)> = Vec::new();
+        for passes in [1, 2, 3] {
+            let (result, explanation) = store
+                .explain_query_opt(
+                    query.text(),
+                    QueryOptions {
+                        optimization_level: OptimizationLevel::Default,
+                        max_optimizer_passes: Some(passes),
+                    },
+                )
+                .await
+                .unwrap();
+            consume_result(result).await;
+            plans.push((passes, explanation.optimized_logical_plan.to_string()));
+        }
 
-        if baseline != plan {
-            any_difference = true;
-            println!("[CHANGED] {query_name}: Default (1 pass) vs Full (3 passes) differ");
-        } else {
-            println!("[OK]      {query_name}: Default (1 pass) vs Full (3 passes) identical");
+        for (a, b) in pairs {
+            let plan_a = plans.iter().find(|(p, _)| *p == a).map(|(_, s)| s);
+            let plan_b = plans.iter().find(|(p, _)| *p == b).map(|(_, s)| s);
+
+            if plan_a != plan_b {
+                any_difference = true;
+                println!("  [CHANGED] passes={a} vs passes={b} differ");
+            } else {
+                println!("  [OK]      passes={a} vs passes={b} identical");
+            }
         }
     }
 
     println!("\n{}", "=".repeat(60));
     if any_difference {
-        println!("RESULT: plans CHANGED between Default and Full optimization level");
+        println!("RESULT BSBM Explore: plans CHANGED");
     } else {
-        println!("RESULT: plans are IDENTICAL between Default and Full optimization level");
+        println!("RESULT BSBM Explore: plans IDENTICAL");
     }
     println!("{}", "=".repeat(60));
 }
@@ -146,15 +146,11 @@ fn get_query_to_execute(
     benchmark_context: &BenchmarkContext,
     query_name: BsbmExploreQueryName,
 ) -> SparqlRawOperation<BsbmExploreQueryName> {
-    let query = benchmark
+    benchmark
         .list_raw_operations(benchmark_context)
         .context("Could not list raw operations for BSBM Explore benchmark. Have you prepared a bsbm-1000 dataset?")
         .unwrap()
         .into_iter()
         .find(|q| q.query_name() == query_name)
-        .unwrap();
-
-    println!("Executing query ({}): {}", query.query_name(), query.text());
-
-    query
+        .unwrap()
 }

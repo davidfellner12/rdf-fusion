@@ -33,11 +33,17 @@ pub enum OptimizationLevel {
 impl OptimizationLevel {
     /// Returns the number of optimizer passes to use for this level.
     /// Returns `None` for `None` level, letting DataFusion use its own default.
+    pub fn max_passes_from_env() -> Option<usize> {
+        std::env::var("MAX_PASSES")
+            .ok()
+            .and_then(|v| v.parse().ok())
+    }
+
     pub fn max_passes(&self) -> Option<usize> {
         match self {
-            OptimizationLevel::None    => None,
+            OptimizationLevel::None => None,
             OptimizationLevel::Default => Some(1),
-            OptimizationLevel::Full    => Some(3),
+            OptimizationLevel::Full => Some(3),
         }
     }
 }
@@ -47,6 +53,7 @@ impl OptimizationLevel {
 pub struct QueryOptions {
     /// The defined optimization level
     pub optimization_level: OptimizationLevel,
+    pub max_optimizer_passes: Option<usize>,
 }
 
 /// Options for SPARQL update evaluation.
