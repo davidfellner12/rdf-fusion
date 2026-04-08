@@ -12,6 +12,7 @@ use rdf_fusion::io::RdfFormat;
 use rdf_fusion::store::Store;
 use std::fs;
 use std::path::{Path, PathBuf};
+use crate::benchmarks::watdiv::prepare::{compile_watdiv, download_watdiv_tarball, generate_watdiv_data, generate_watdiv_queries};
 
 struct WatDivFilePaths {
     data_file: PathBuf,
@@ -54,8 +55,12 @@ impl Benchmark for WatDivBenchmark {
     }
 
     fn requirements(&self, _bench_files_path: &Path) -> Vec<PrepRequirement> {
-        // Data files must be placed manually into watdiv_queries/data/
-        vec![]
+        vec![
+            download_watdiv_tarball(),
+            compile_watdiv(),
+            generate_watdiv_data(),
+            generate_watdiv_queries()
+        ]
     }
 
     async fn execute(

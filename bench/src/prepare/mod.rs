@@ -4,6 +4,7 @@ mod file_download;
 mod requirement;
 mod run_closure;
 mod run_command;
+mod watdiv;
 
 pub use actions::*;
 pub use copy_file::*;

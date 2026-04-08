@@ -18,6 +18,8 @@ pub enum ArchiveType {
     Bz2,
     /// A .zip archive.
     Zip,
+    /// for tarball format
+    Tar
 }
 
 /// Executes the given `action` on the given file.

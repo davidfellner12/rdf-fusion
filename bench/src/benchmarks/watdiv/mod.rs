@@ -1,6 +1,7 @@
 mod benchmark;
 mod queries;
 mod report;
+mod prepare;
 
 pub use benchmark::WatDivBenchmark;
 pub use queries::WatDivQueryName;
