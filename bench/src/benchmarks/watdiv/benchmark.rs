@@ -38,6 +38,7 @@ impl WatDivBenchmark {
         let files = create_files(ctx)?;
         let store = ctx.parent().create_store();
 
+        eprintln!("Loading from: {}", files.data_file.display());
         let data = fs::read(&files.data_file)
             .context(format!("Could not read WatDiv data: {}", files.data_file.display()))?;
         store.load_from_reader(RdfFormat::NTriples, data.as_slice()).await?;
