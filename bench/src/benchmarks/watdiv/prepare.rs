@@ -4,8 +4,8 @@ use reqwest::Url;
 use std::path::PathBuf;
 use std::process::Command;
 
-const WATDIV_BIN: &str = "watdiv/bin/Release/watdiv";
-const WATDIV_BIN_DIR: &str = "watdiv/bin/Release";
+const WATDIV_BIN: &str = "data/watdiv/watdiv/bin/Release/watdiv";
+const WATDIV_BIN_DIR: &str = "data/watdiv/watdiv/bin/Release";
 const WATDIV_MODEL: &str = "../../model/wsdbm-data-model.txt";
 const WATDIV_TESTSUITE: &str = "../../testsuite";
 
@@ -20,7 +20,7 @@ pub fn download_watdiv_tarball() -> PrepRequirement {
 
 pub fn compile_watdiv() -> PrepRequirement {
     PrepRequirement::RunCommand {
-        workdir: PathBuf::from("watdiv/watdiv"),
+        workdir: PathBuf::from("watdiv"),
         program: "make".to_string(),
         args: vec![],
         check_requirement: Box::new(|_ctx| {

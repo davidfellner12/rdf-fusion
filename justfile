@@ -43,8 +43,15 @@ prepare-benches: prepare-watdiv
     cd bench && cargo run --profile profiling-nonlto prepare wind-farm --num-turbines 16
 
 [working-directory: '.']
-prepare-watdiv:
-    cd bench && cargo run --profile profiling-nonlto prepare watdiv
+prepare-watdiv: check-watdiv-deps
+    cd bench && cargo run --profile profiling-nonlto prepare wat-div
+
+# Checks that the dependencies for building the WatDiv C++ binary are available.
+# On Debian/Ubuntu: sudo apt install -y g++ make libboost-date-time-dev
+# On Fedora:        sudo dnf install -y gcc-c++ make boost-date-time
+check-watdiv-deps:
+    @which g++ > /dev/null 2>&1 || (echo "Error: g++ not found. Debian/Ubuntu: sudo apt install g++  |  Fedora: sudo dnf install gcc-c++" && exit 1)
+    @which make > /dev/null 2>&1 || (echo "Error: make not found. Debian/Ubuntu: sudo apt install make  |  Fedora: sudo dnf install make" && exit 1)
 
 # --- Run benchmarks ---
 bench-watdiv:

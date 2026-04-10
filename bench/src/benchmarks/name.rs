@@ -29,8 +29,7 @@ pub enum BenchmarkName {
         #[arg(short, long, default_value = "400")]
         num_turbines: NumTurbines,
     },
-
-    //TODO future benchmark for discussion
+    
     /// Represents the WatDiv benchmark.
     WatDiv {
         /// Provides an upper bound on the number of queries to be executed.
