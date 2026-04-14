@@ -1,7 +1,7 @@
 //! WatDiv Benchmark for RDF Fusion
+
 mod utils;
 
-use crate::utils::verbose::{is_verbose, print_query_details};
 use crate::utils::{consume_results, create_runtime};
 use anyhow::Context;
 use codspeed_criterion_compat::{criterion_group, criterion_main, Criterion};
@@ -9,9 +9,9 @@ use rdf_fusion::execution::sparql::{OptimizationLevel, QueryOptions};
 use rdf_fusion_bench::benchmarks::watdiv::get_watdiv_raw_sparql_operation;
 use rdf_fusion_bench::benchmarks::watdiv::{WatDivBenchmark, WatDivQueryName};
 use rdf_fusion_bench::environment::RdfFusionBenchContext;
+use rdf_fusion_bench::benchmarks::Benchmark;
 use std::path::PathBuf;
 use std::time::Duration;
-use rdf_fusion_bench::benchmarks::Benchmark;
 
 fn opts(level: OptimizationLevel, max_passes: Option<usize>) -> QueryOptions {
     QueryOptions {
@@ -37,22 +37,28 @@ fn watdiv_bench(c: &mut Criterion, benchmarking_context: RdfFusionBenchContext) 
 
     let store = runtime
         .block_on(benchmark.prepare_store(&bench_context))
-        .context(
-            "\nFailed to prepare store.\n\n\
-             Place watdiv.nt in data/watdiv/ and .sparql files in data/watdiv_queries/queries/.\n",
-        )
+        .context("Failed to prepare store. Place watdiv.nt in data/watdiv/ and .sparql files in data/watdiv_queries/queries/.")
         .unwrap();
 
     let profiles: &[(&'static str, OptimizationLevel, Option<usize>, u8)] = &[
-        ("None",    OptimizationLevel::None,    None,    1),
-        ("Default", OptimizationLevel::Default, Some(1), 1),
-        ("Full",    OptimizationLevel::Full,    Some(1), 1),
+        ("None_1", OptimizationLevel::None, Some(1), 1),
+        ("None_2", OptimizationLevel::None, Some(2), 2),
+        ("None_3", OptimizationLevel::None, Some(3), 3),
+
+        ("Default_1", OptimizationLevel::Default, Some(1), 1),
+        ("Default_2", OptimizationLevel::Default, Some(2), 2),
+        ("Default_3", OptimizationLevel::Default, Some(3), 3),
+
+        ("Full_1", OptimizationLevel::Full, Some(1), 1),
+        ("Full_2", OptimizationLevel::Full, Some(2), 2),
+        ("Full_3", OptimizationLevel::Full, Some(3), 3),
     ];
 
     for query_name in WatDivQueryName::list_queries() {
         let label = format!(
             "WatDiv (target_partitions={target_partitions}) - {query_name}"
         );
+
         let operation =
             get_watdiv_raw_sparql_operation(&bench_context, query_name).unwrap();
 
