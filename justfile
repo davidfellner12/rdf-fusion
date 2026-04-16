@@ -57,6 +57,12 @@ check-watdiv-deps:
 bench-watdiv:
     cd bench && cargo bench --profile release-nonlto --bench watdiv
 
+bench-bsbm-explore:
+    cd bench && cargo bench --profile release-nonlto --bench bsbm_explore
+
+bench-bsbm-business:
+    cd bench && cargo bench --profile release-nonlto --bench bsbm_business_intelligence
+
 # --- Serve the RDF Fusion server ---
 serve-dbg:
     cargo run --bin rdf-fusion -- serve --bind 0.0.0.0:7878
