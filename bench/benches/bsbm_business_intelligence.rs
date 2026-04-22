@@ -72,7 +72,7 @@ fn bsbm_business_intelligence_10000(c: &mut Criterion, ctx: RdfFusionBenchContex
                 |b| {
                     b.to_async(&runtime).iter(|| async {
                         let result = store.query_opt(query.text(), opts(level, max_passes)).await;
-                        assert!(result.is_ok());
+                        assert!(result.is_ok(), "{:?}", result.err());
                     });
                 },
             );
